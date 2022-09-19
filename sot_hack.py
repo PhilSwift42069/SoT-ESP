@@ -200,3 +200,6 @@ class SoTMemoryReader:
             # sake of ESP
             elif CONFIG.get('CREWS_ENABLED') and raw_name == "CrewService":
                 self.crew_data = Crews(self.rm, actor_id, actor_address)
+            
+            #elif CONFIG.get('TEST') and raw_name == "BP_Storm_C":
+                #self.storm_data = 
