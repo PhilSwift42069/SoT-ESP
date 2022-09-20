@@ -11,6 +11,7 @@ from mapping import ship_keys
 from helpers import OFFSETS, CONFIG, logger
 from Modules.ship import Ship
 from Modules.crews import Crews
+from Modules.test import Test
 
 
 class SoTMemoryReader:
@@ -179,8 +180,8 @@ class SoTMemoryReader:
                 raw_name = self.actor_name_map.get(actor_id)
 
             # Ignore anything we cannot find a name for
-            if not raw_name:
-                continue
+            #if not raw_name:
+                #continue
 
             # If we have Ship ESP enabled in helpers.py, and the name of the
             # actor is in our mapping.py ship_keys object, interpret the actor
@@ -201,5 +202,6 @@ class SoTMemoryReader:
             elif CONFIG.get('CREWS_ENABLED') and raw_name == "CrewService":
                 self.crew_data = Crews(self.rm, actor_id, actor_address)
             
-            #elif CONFIG.get('TEST') and raw_name == "BP_Storm_C":
-                #self.storm_data = 
+            elif CONFIG.get('TEST'):
+                test = Test(self.rm, actor_id, actor_address, self.my_coords, raw_name)
+                self.display_objects.append(test)
