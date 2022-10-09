@@ -54,4 +54,4 @@ class Fishing(DisplayObject):
             self.to_delete = True
             return
         
-    def fisherman(self):
+        if 
