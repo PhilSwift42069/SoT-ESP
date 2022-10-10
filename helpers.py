@@ -15,8 +15,7 @@ from pyglet.text import Label
 CONFIG = {
     "CREWS_ENABLED": True,
     "SHIPS_ENABLED": True,
-    "TEST": False,
-    "FISHING": True
+    "TEST": False
 }
 
 # Used to track unique crews
@@ -175,6 +174,23 @@ def calculate_distance(obj_to: dict, obj_from: dict) -> int:
     :return: the distance in meters from obj_from to obj_to
     """
     return int(math.sqrt((obj_to.get("x") - obj_from.get("x")) ** 2 +
+                         (obj_to.get("y") - obj_from.get("y")) ** 2 +
+                         (obj_to.get("z") - obj_from.get("z")) ** 2))
+
+def calculate_distance_precise(obj_to: dict, obj_from: dict):
+    """
+    Determines the distances From one object To another in meters, rounding
+    to whatever degree of precision you request
+    (**2 == ^2)
+
+    Note: Can convert the int() to a round() if you want more precision
+
+    :param obj_to: A coordinate dict for the destination object
+    :param obj_from: A coordinate dict for the origin object
+    :rtype: int
+    :return: the distance in meters from obj_from to obj_to
+    """
+    return (math.sqrt((obj_to.get("x") - obj_from.get("x")) ** 2 +
                          (obj_to.get("y") - obj_from.get("y")) ** 2 +
                          (obj_to.get("z") - obj_from.get("z")) ** 2))
 

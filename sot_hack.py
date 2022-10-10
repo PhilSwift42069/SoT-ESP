@@ -8,11 +8,11 @@ import struct
 import logging
 from memory_helper import ReadMemory
 from mapping import ship_keys
-from helpers import OFFSETS, CONFIG, logger
+from helpers import OFFSETS, CONFIG, calculate_distance, calculate_distance_precise, logger
 from Modules.ship import Ship
 from Modules.crews import Crews
 from Modules.test import Test
-from Modules.fishing import Fishing
+import time
 
 
 class SoTMemoryReader:
@@ -73,6 +73,8 @@ class SoTMemoryReader:
         self.server_players = []
         self.display_objects = []
         self.crew_data = None
+        self.oldCoords = self.my_coords
+        self.oldTime = time.time()
 
 
     def _load_local_player(self) -> int:
@@ -104,6 +106,12 @@ class SoTMemoryReader:
             OFFSETS.get('PlayerCameraManager.CameraCache')
             + OFFSETS.get('CameraCacheEntry.MinimalViewInfo'),
             fov=True)
+        self.currentTime = time.time()
+        if self.currentTime - self.oldTime > 0.1:
+            self.distanceTraveled = calculate_distance_precise(self.my_coords, self.oldCoords)
+            self.oldCoords = self.my_coords
+            print(str(self.distanceTraveled/(self.currentTime - self.oldTime)) +" m/s")
+            self.oldTime=time.time()
 
     def _coord_builder(self, actor_address: int, offset=0x78, camera=True,
                        fov=False) -> dict:
@@ -199,6 +207,8 @@ class SoTMemoryReader:
                 #     continue
                 # else:
                 self.display_objects.append(ship)
+                #speed=Speed(self.rm, actor_id, actor_address, self.my_coords, raw_name)
+                #self.display_objects.append(speed)
 
             # If we have the crews data enabled in helpers.py and the name
             # of the actor is CrewService, we create a class based on that Crew
@@ -212,7 +222,7 @@ class SoTMemoryReader:
                 test = Test(self.rm, actor_id, actor_address, self.my_coords, raw_name)
                 self.display_objects.append(test)
 
-            elif CONFIG.get('Fishing'):
-                if actor_id = 
+            #elif CONFIG.get('Fishing'):
+                #if actor_id = 
                 #fishing = Fishing(self.rm, actor_id, actor_address, self.my_coords, raw_name)
-                return
+                #return
