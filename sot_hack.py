@@ -76,6 +76,9 @@ class SoTMemoryReader:
         self.oldCoords = self.my_coords
         self.oldTime = time.time()
 
+        self.closestShipDistance = 4000
+        self.closestShipAddress = 0
+
 
     def _load_local_player(self) -> int:
         """
@@ -203,6 +206,9 @@ class SoTMemoryReader:
                 #     continue
                 # else:
                 self.display_objects.append(ship)
+                if ship.distance < self.closestShipDistance:
+                    self.closestShipDistance = ship.distance
+                    self.closestShipAddress = actor_address
 
             # If we have the crews data enabled in helpers.py and the name
             # of the actor is CrewService, we create a class based on that Crew
@@ -215,8 +221,3 @@ class SoTMemoryReader:
             elif CONFIG.get('TEST'):
                 test = Test(self.rm, actor_id, actor_address, self.my_coords, raw_name)
                 self.display_objects.append(test)
-
-            elif CONFIG.get('CANNON_AIMBOT_ENABLED'):
-                if win32api.GetKeyState(0x02) < 0: #checks if right mouse is pressed
-                    print("right mouse button")
-                return

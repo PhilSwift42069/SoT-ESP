@@ -6,10 +6,14 @@
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
-from helpers import calculate_distance, object_to_screen, main_batch, \
-     TEXT_OFFSET_X, TEXT_OFFSET_Y
+from helpers import calculate_distance, object_to_screen, calculate_distance_precise, main_batch, \
+     TEXT_OFFSET_X, TEXT_OFFSET_Y, CONFIG
 from mapping import ships
 from Modules.display_object import DisplayObject
+import time
+import numpy as np
+import win32api
+from pynput.keyboard import Key, Controller
 
 SHIP_COLOR = (100, 0, 0)  # The color we want the indicator circle to be
 CIRCLE_SIZE = 10  # The size of the indicator circle we want
@@ -55,6 +59,11 @@ class Ship(DisplayObject):
         self.distance = calculate_distance(self.coords, self.my_coords)
 
         self.screen_coords = object_to_screen(self.my_coords, self.coords)
+        self.speed = 0
+        self.old_coords = self.coords
+        self.old_time = time.time()
+        self.old_speeds = np.array([0])
+        self.keyboard = Controller()
 
         # All of our actual display information & rendering
         self.color = SHIP_COLOR
@@ -85,7 +94,7 @@ class Ship(DisplayObject):
         Generates a string used for rendering. Separate function in the event
         you need to add more data (Sunk %, hole count, etc)
         """
-        return f"{self.name} - {self.distance}m"
+        return f"{self.name} - {self.distance}m - {self.speed}m/s"
 
     def _build_text_render(self) -> Label:
         """
@@ -129,6 +138,16 @@ class Ship(DisplayObject):
         self.coords = self._coord_builder(self.actor_root_comp_ptr,
                                           self.coord_offset)
         new_distance = calculate_distance(self.coords, self.my_coords)
+        if time.time() - self.old_time > 0.05: #find speed of ship
+            currentSpeed = round(calculate_distance_precise(self.coords, self.old_coords) / (time.time() - self.old_time), 2)
+            self.old_coords = self.coords
+            self.old_time = time.time()
+            self.old_speeds = np.append(self.old_speeds,currentSpeed)
+            if self.old_speeds.size <= 5:
+                self.old_speeds = np.delete(self.old_speeds,0)
+            self.speed = round(np.sum(self.old_speeds)/5,2)
+            
+            
 
         self.screen_coords = object_to_screen(self.my_coords, self.coords)
 
@@ -156,3 +175,17 @@ class Ship(DisplayObject):
         else:
             # if it isn't on our screen, set it to invisible to save resources
             self.group.visible = False
+
+        #cannon aimbot
+        if CONFIG.get('CANNON_AIMBOT_ENABLED'):
+            if win32api.GetKeyState(0x02) < 0 and 20 < self.distance < 500:
+                print(self.distance)
+                if self.icon.x < 1270:
+                    self.keyboard.press('a')
+                if self.icon.x > 1290:
+                    self.keyboard.press('d')
+                time.sleep(0.01)
+                self.keyboard.release('w')
+                self.keyboard.release('a')
+                self.keyboard.release('s')
+                self.keyboard.release('d')
