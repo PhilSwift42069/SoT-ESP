@@ -3,6 +3,7 @@
 @Source https://github.com/DougTheDruid/SoT-ESP-Framework
 """
 
+from turtle import distance
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
@@ -11,7 +12,6 @@ from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_dis
 from mapping import ships
 from Modules.display_object import DisplayObject
 import time
-import numpy as np
 import win32api
 from pynput.keyboard import Key, Controller
 import math
@@ -63,7 +63,7 @@ class Ship(DisplayObject):
         self.speed = 0
         self.old_coords = self.coords
         self.old_time = time.time()
-        self.old_speeds = np.array([0])
+        self.old_speed = 0
         self.keyboard = Controller()
 
         # All of our actual display information & rendering
@@ -139,14 +139,11 @@ class Ship(DisplayObject):
         self.coords = self._coord_builder(self.actor_root_comp_ptr,
                                           self.coord_offset)
         new_distance = calculate_distance(self.coords, self.my_coords)
-        if time.time() - self.old_time > 0.05: #find speed of ship
-            currentSpeed = round(calculate_distance_precise(self.coords, self.old_coords) / (time.time() - self.old_time), 2)
+        if time.time() - self.old_time >= 0.5: #find speed of ship
+            self.speed = round(calculate_distance_precise(self.coords, self.old_coords) / (time.time() - self.old_time), 2)
             self.old_coords = self.coords
             self.old_time = time.time()
-            self.old_speeds = np.append(self.old_speeds,currentSpeed)
-            if self.old_speeds.size <= 5:
-                self.old_speeds = np.delete(self.old_speeds,0)
-            self.speed = round(np.sum(self.old_speeds)/5,2)
+            self.old_speed = self.speed
             
             
 
@@ -181,14 +178,17 @@ class Ship(DisplayObject):
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):
             cannonballSpeed = 68
             gravity = 9.8
-            if win32api.GetKeyState(0x02) < 0 and 20 < self.distance < 500:
+            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 500:
                 requiredAngle = math.degrees(0.5 * (math.asin((gravity * self.distance) / (cannonballSpeed ** 2))))
                 cameraAngle = self.my_coords["cam_x"]
-                if self.icon.x < 1270:
+                screenSizeX = 2560
+                distanceFromCenter = self.icon.x - (screenSizeX / 2)
+                print(distanceFromCenter)
+                if 200 > distanceFromCenter > 10:
                     self.keyboard.press('a')
                     time.sleep(0.01)
                     self.keyboard.release('a')
-                if self.icon.x > 1290:
+                elif -200 < distanceFromCenter < -10:
                     self.keyboard.press('d')
                     time.sleep(0.01)
                     self.keyboard.release('d')
@@ -196,7 +196,7 @@ class Ship(DisplayObject):
                     self.keyboard.press('w')
                     time.sleep(0.005)
                     self.keyboard.release('w')
-                if cameraAngle > requiredAngle + 0.01:
+                elif cameraAngle > requiredAngle + 0.01:
                     self.keyboard.press('s')
                     time.sleep(0.005)
                     self.keyboard.release('s')
