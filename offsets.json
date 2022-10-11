@@ -12,5 +12,7 @@
   "PlayerState.PlayerName": 976,
   "SceneComponent.ActorCoordinates": 300,
   "World.OwningGameInstance": 448,
-  "World.PersistentLevel": 48
+  "World.PersistentLevel": 48,
+  "Cannon.ProjectileSpeed": 1460,
+  "Cannon.ProjectileGravityScale": 1464
 }

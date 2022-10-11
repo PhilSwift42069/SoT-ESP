@@ -6,7 +6,7 @@
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
-from helpers import calculate_distance, object_to_screen, calculate_distance_precise, main_batch, \
+from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_distance_precise, main_batch, \
      TEXT_OFFSET_X, TEXT_OFFSET_Y, CONFIG
 from mapping import ships
 from Modules.display_object import DisplayObject
@@ -14,6 +14,7 @@ import time
 import numpy as np
 import win32api
 from pynput.keyboard import Key, Controller
+import math
 
 SHIP_COLOR = (100, 0, 0)  # The color we want the indicator circle to be
 CIRCLE_SIZE = 10  # The size of the indicator circle we want
@@ -176,16 +177,26 @@ class Ship(DisplayObject):
             # if it isn't on our screen, set it to invisible to save resources
             self.group.visible = False
 
-        #cannon aimbot
+        #cannon aimbot          #cannonball moves roughly 68 m/s
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):
+            cannonballSpeed = 68
+            gravity = 9.8
             if win32api.GetKeyState(0x02) < 0 and 20 < self.distance < 500:
-                print(self.distance)
+                requiredAngle = math.degrees(0.5 * (math.asin((gravity * self.distance) / (cannonballSpeed ** 2))))
+                cameraAngle = self.my_coords["cam_x"]
                 if self.icon.x < 1270:
                     self.keyboard.press('a')
+                    time.sleep(0.01)
+                    self.keyboard.release('a')
                 if self.icon.x > 1290:
                     self.keyboard.press('d')
-                time.sleep(0.01)
-                self.keyboard.release('w')
-                self.keyboard.release('a')
-                self.keyboard.release('s')
-                self.keyboard.release('d')
+                    time.sleep(0.01)
+                    self.keyboard.release('d')
+                if cameraAngle < requiredAngle - 0.01:
+                    self.keyboard.press('w')
+                    time.sleep(0.005)
+                    self.keyboard.release('w')
+                if cameraAngle > requiredAngle + 0.01:
+                    self.keyboard.press('s')
+                    time.sleep(0.005)
+                    self.keyboard.release('s')

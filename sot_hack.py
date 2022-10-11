@@ -79,7 +79,6 @@ class SoTMemoryReader:
         self.closestShipDistance = 4000
         self.closestShipAddress = 0
 
-
     def _load_local_player(self) -> int:
         """
         Returns the local player object out of uWorld.UGameInstance.
