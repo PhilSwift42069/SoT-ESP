@@ -169,8 +169,6 @@ class SoTMemoryReader:
         actor_data = struct.unpack("<Qi", actor_raw)
 
         self.server_players = []
-        #logger.info("READING ACTORS")
-        #print("READING ACTORS")
         for x in range(0, actor_data[1]):
             # We start by getting the ActorID for a given actor, and comparing
             # that ID to a list of "known" id's we cache in self.actor_name_map
@@ -179,9 +177,6 @@ class SoTMemoryReader:
             actor_id = self.rm.read_int(
                 actor_address + OFFSETS.get('Actor.actorId')
             )
-            #print(actor_id)
-            #print(self.rm.read_gname(actor_id)) #prints all active actor names to console
-            #logging.info(self.rm.read_gname(actor_id)) #dumps all actor names to the log
 
             # We save a mapping of actor id to actor name for the sake of
             # saving memory calls
