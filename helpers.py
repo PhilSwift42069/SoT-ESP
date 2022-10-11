@@ -15,7 +15,9 @@ from pyglet.text import Label
 CONFIG = {
     "CREWS_ENABLED": True,
     "SHIPS_ENABLED": True,
-    "TEST": False
+    "TEST": False,
+    "SPEEDOMETER_ENABLED" : False,
+    "CANNON_AIMBOT_ENABLED": True,
 }
 
 # Used to track unique crews
