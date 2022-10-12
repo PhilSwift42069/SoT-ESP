@@ -220,3 +220,5 @@ class SoTMemoryReader:
             elif CONFIG.get('TEST'):
                 test = Test(self.rm, actor_id, actor_address, self.my_coords, raw_name)
                 self.display_objects.append(test)
+
+            

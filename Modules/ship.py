@@ -3,7 +3,6 @@
 @Source https://github.com/DougTheDruid/SoT-ESP-Framework
 """
 
-from turtle import distance
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
@@ -61,9 +60,23 @@ class Ship(DisplayObject):
 
         self.screen_coords = object_to_screen(self.my_coords, self.coords)
         self.speed = 0
+        self.speed_x = 0
+        self.speed_y = 0
+        self.player_speed = 0
+        self.player_speed_x = 0
+        self.player_speed_y = 0
+
         self.old_coords = self.coords
+        self.old_player_coords = self.my_coords
         self.old_time = time.time()
         self.old_speed = 0
+        self.old_speed_x = 0
+        self.old_speed_y = 0
+        self.old_player_speed = 0
+        self.old_player_speed_x = 0
+        self.old_player_speed_y = 0
+        self.old_distance = self.distance
+
         self.keyboard = Controller()
 
         # All of our actual display information & rendering
@@ -139,13 +152,31 @@ class Ship(DisplayObject):
         self.coords = self._coord_builder(self.actor_root_comp_ptr,
                                           self.coord_offset)
         new_distance = calculate_distance(self.coords, self.my_coords)
-        if time.time() - self.old_time >= 0.5: #find speed of ship
-            self.speed = round(calculate_distance_precise(self.coords, self.old_coords) / (time.time() - self.old_time), 2)
+
+        #Calculate all speeds/velocities
+        if time.time() - self.old_time >= 0.5:
+            timeChange = time.time() - self.old_time
+
+            #calculate speeds
+            self.speed = round(calculate_distance_precise(self.coords, self.old_coords) / timeChange, 2)
+            self.speed_x = round((self.coords["x"] - self.old_coords['x']) / timeChange, 2)
+            self.speed_y = round((self.coords["y"] - self.old_coords['y']) / timeChange, 2)
+            self.player_speed = round(calculate_distance_precise(self.my_coords, self.old_player_coords), 2)
+            self.player_speed_x = round((self.my_coords["x"] - self.old_player_coords['x']) / timeChange, 2)
+            self.player_speed_y = round((self.my_coords["y"] - self.old_player_coords['y']) / timeChange, 2)
+            
+            #print(str(self.player_speed_x) + ', ' + str(self.player_speed_y))
+            #print(str(self.my_coords['cam_x']) + ', ' + str(self.my_coords['cam_y']))
+
+            #reset old values
             self.old_coords = self.coords
+            self.old_player_coords = self.my_coords
             self.old_time = time.time()
             self.old_speed = self.speed
-            
-            
+            self.old_speed_x = self.speed_x
+            self.old_speed_y = self.speed_y
+            self.old_player_speed_x = self.player_speed_x
+            self.old_player_speed_y = self.player_speed_y
 
         self.screen_coords = object_to_screen(self.my_coords, self.coords)
 
@@ -174,29 +205,67 @@ class Ship(DisplayObject):
             # if it isn't on our screen, set it to invisible to save resources
             self.group.visible = False
 
-        #cannon aimbot          #cannonball moves roughly 68 m/s
-        if CONFIG.get('CANNON_AIMBOT_ENABLED'):
+        #cannon aimbot
+        if CONFIG.get('CANNON_AIMBOT_ENABLED'):    
+
+            #set constants
             cannonballSpeed = 68
             gravity = 9.8
-            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 500:
-                requiredAngle = math.degrees(0.5 * (math.asin((gravity * self.distance) / (cannonballSpeed ** 2))))
+            screenSizeX = 2560
+            sleepConstant = 0.001
+
+            distanceFromCenter = -(self.icon.x - (screenSizeX / 2))
+                    
+            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < 200:
+
+                #find speed of player
+
+                #do math
+                requiredAngle = math.degrees(0.5 * (math.asin((gravity * (self.distance - 5)) / (cannonballSpeed ** 2))))
                 cameraAngle = self.my_coords["cam_x"]
-                screenSizeX = 2560
-                distanceFromCenter = self.icon.x - (screenSizeX / 2)
-                print(distanceFromCenter)
+                sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
+                flightTime = 2 * cannonballSpeed * math.sin(math.radians(requiredAngle)) / gravity
+                self.player_speed_x = 10
+                relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
+                relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
+                relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
+                if relativeSpeed != 0:
+                    if self.player_speed_x >= self.player_speed_y:
+                        leadAngle = math.degrees(math.asin((relativeSpeed / cannonballSpeed) * (relativeSpeed_x / relativeSpeed)))
+                    else:
+                        leadAngle = math.degrees(math.asin((relativeSpeed / cannonballSpeed) * (relativeSpeed_y / relativeSpeed)))
+                    #leadAngle = (relativeSpeed / cannonballSpeed) * math.asin(180 - math.asin(relativeSpeed_x / relativeSpeed) - math.asin(relativeSpeed_y / relativeSpeed))
+                    leadAngle = (relativeSpeed / cannonballSpeed) * (relativeSpeed_y / relativeSpeed)
+                else:
+                    leadAngle = 0
+                print(str(leadAngle) + ' leadAngle | ' + str(relativeSpeed))
+
+
+                '''TODO
+                - find relative horizontal speed of target
+                - calculate horizontal distance traveled to calculate approxmiate lead angle
+                - find speed of target away from boat
+                - calculate new distance from boat after flight time
+                - calculate new requiredAngle
+
+                - if self.my_coords['cam_y'] = 0, forward movement is positive x axis
+                - find relative horizontal speed by making right triangle with the rate of separation on both axis
+                '''
+                #print(str(distanceFromCenter) + ' pixels from center | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(sleepTime) + ' sleep time')
+
                 if 200 > distanceFromCenter > 10:
                     self.keyboard.press('a')
-                    time.sleep(0.01)
+                    time.sleep(0.005)
                     self.keyboard.release('a')
                 elif -200 < distanceFromCenter < -10:
                     self.keyboard.press('d')
-                    time.sleep(0.01)
+                    time.sleep(0.005)
                     self.keyboard.release('d')
                 if cameraAngle < requiredAngle - 0.01:
                     self.keyboard.press('w')
-                    time.sleep(0.005)
+                    time.sleep(sleepTime)
                     self.keyboard.release('w')
                 elif cameraAngle > requiredAngle + 0.01:
                     self.keyboard.press('s')
-                    time.sleep(0.005)
+                    time.sleep(sleepTime)
                     self.keyboard.release('s')
