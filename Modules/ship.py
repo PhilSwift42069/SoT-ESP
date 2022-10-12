@@ -230,14 +230,9 @@ class Ship(DisplayObject):
                 relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
                 relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
                 if relativeSpeed != 0:
-                    if self.player_speed_x >= self.player_speed_y:
-                        leadAngle = math.degrees(math.asin((relativeSpeed / cannonballSpeed) * (relativeSpeed_x / relativeSpeed)))
-                    else:
-                        leadAngle = math.degrees(math.asin((relativeSpeed / cannonballSpeed) * (relativeSpeed_y / relativeSpeed)))
-                    #leadAngle = (relativeSpeed / cannonballSpeed) * math.asin(180 - math.asin(relativeSpeed_x / relativeSpeed) - math.asin(relativeSpeed_y / relativeSpeed))
-                    leadAngle = (relativeSpeed / cannonballSpeed) * (relativeSpeed_y / relativeSpeed)
-                else:
-                    leadAngle = 0
+                    newDistance_x
+
+                
                 print(str(leadAngle) + ' leadAngle | ' + str(relativeSpeed))
 
 
@@ -250,6 +245,8 @@ class Ship(DisplayObject):
 
                 - if self.my_coords['cam_y'] = 0, forward movement is positive x axis
                 - find relative horizontal speed by making right triangle with the rate of separation on both axis
+                - IMPORTANT: find horizontal offset that results in the same horizontal speed as target
+                - IMPORTANT: if relativeSpeed_x > relativeSpeed_y, ship is traveling along the x axis and horizontal speed is equal to the speed along the x axis
                 '''
                 #print(str(distanceFromCenter) + ' pixels from center | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(sleepTime) + ' sleep time')
 
