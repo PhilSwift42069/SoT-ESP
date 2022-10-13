@@ -89,6 +89,7 @@ class Ship(DisplayObject):
         self.screenSizeX = SOT_WINDOW[2] - SOT_WINDOW[0]
 
         self.keyboard = Controller()
+        self.mouse = Controller()
 
         # All of our actual display information & rendering
         self.color = SHIP_COLOR
@@ -244,7 +245,7 @@ class Ship(DisplayObject):
 
                 print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
 
-                if futureDistanceFromCenter > 10:
+                '''if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
                     time.sleep(0.005)
                     self.keyboard.release('a')
@@ -259,4 +260,7 @@ class Ship(DisplayObject):
                 elif cameraAngle > requiredAngle + 0.01:
                     self.keyboard.press('s')
                     time.sleep(sleepTime)
-                    self.keyboard.release('s')
+                    self.keyboard.release('s')'''
+
+                if time.time() - self.old_time > 0.4:
+                    self.mouse.move(0,20)
