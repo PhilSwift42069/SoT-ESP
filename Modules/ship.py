@@ -13,7 +13,9 @@ from mapping import ships
 from Modules.display_object import DisplayObject
 import time
 import win32api
-from pynput.keyboard import Key, Controller
+import win32gui
+from pynput.keyboard import Controller
+from pynput.mouse import Controller
 import math
 
 SHIP_COLOR = (100, 0, 0)  # The color we want the indicator circle to be
@@ -77,6 +79,14 @@ class Ship(DisplayObject):
         self.old_player_speed_x = 0
         self.old_player_speed_y = 0
         self.old_distance = self.distance
+
+        self.cannonballSpeed = 68
+        self.gravity = 9.8
+
+        window = win32gui.FindWindow(None, "Sea of Thieves")
+        SOT_WINDOW = win32gui.GetWindowRect(window)  # (x1, y1, x2, y2)
+        self.screenSizeY = SOT_WINDOW[3] - SOT_WINDOW[1]
+        self.screenSizeX = SOT_WINDOW[2] - SOT_WINDOW[0]
 
         self.keyboard = Controller()
 
@@ -208,18 +218,11 @@ class Ship(DisplayObject):
 
         #cannon aimbot
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):  
-
-            #set constants
-            cannonballSpeed = 68
-            gravity = 9.8
-            screenSizeX = 2560
-            sleepConstant = 0.001
-
-            distanceFromCenter = -(self.icon.x - (screenSizeX / 2))
+            distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
                     
-            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 0 < self.distance < 471 and abs(distanceFromCenter) < 400:
-                requiredAngleStationary = 0.5 * (math.asin((gravity * (self.distance - 5)) / (cannonballSpeed ** 2)))
-                flightTime = 2 * cannonballSpeed * math.sin(requiredAngleStationary) / gravity
+            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 0 < self.distance < 471 and abs(distanceFromCenter) < (0.15 * self.screenSizeX):
+                requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
+                flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
                 relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
                 relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
@@ -228,18 +231,18 @@ class Ship(DisplayObject):
                 futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
                 futureDistance = calculate_distance(futureCoords, self.my_coords)
                 try:
-                    requiredAngle = math.degrees(0.5 * (math.asin((gravity * (futureDistance - 5)) / (cannonballSpeed ** 2))))
+                    requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
                 except:
                     requiredAngle = 0
                 futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
                 try:
-                    futureDistanceFromCenter = -(futureScreenCoords[0] - (screenSizeX / 2))
+                    futureDistanceFromCenter = -(futureScreenCoords[0] - (self.screenSizeX / 2))
                 except:
                     futureDistanceFromCenter = 0
                 cameraAngle = self.my_coords["cam_x"]
-                sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
+                sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
 
-                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(relativeSpeed) + ' relative speed')
+                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
 
                 if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
