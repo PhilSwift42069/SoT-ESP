@@ -218,10 +218,6 @@ class Ship(DisplayObject):
             distanceFromCenter = -(self.icon.x - (screenSizeX / 2))
                     
             if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 0 < self.distance < 471 and abs(distanceFromCenter) < 400:
-
-                #find speed of player
-
-                #do math
                 requiredAngleStationary = 0.5 * (math.asin((gravity * (self.distance - 5)) / (cannonballSpeed ** 2)))
                 flightTime = 2 * cannonballSpeed * math.sin(requiredAngleStationary) / gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
@@ -242,19 +238,7 @@ class Ship(DisplayObject):
                     futureDistanceFromCenter = 0
                 cameraAngle = self.my_coords["cam_x"]
                 sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
-
-                '''TODO
-                - find relative horizontal speed of target
-                - calculate horizontal distance traveled to calculate approxmiate lead angle
-                - find speed of target away from boat
-                - calculate new distance from boat after flight time
-                - calculate new requiredAngle
-
-                - if self.my_coords['cam_y'] = 0, forward movement is positive x axis
-                - find relative horizontal speed by making right triangle with the rate of separation on both axis
-                - IMPORTANT: find horizontal offset that results in the same horizontal speed as target
-                - IMPORTANT: if relativeSpeed_x > relativeSpeed_y, ship is traveling along the x axis and horizontal speed is equal to the speed along the x axis
-                '''
+                
                 print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(self.speed) + ' speed')
 
                 if futureDistanceFromCenter > 10:
