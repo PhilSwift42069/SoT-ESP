@@ -3,6 +3,7 @@
 @Source https://github.com/DougTheDruid/SoT-ESP-Framework
 """
 
+from turtle import distance
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
@@ -206,7 +207,7 @@ class Ship(DisplayObject):
             self.group.visible = False
 
         #cannon aimbot
-        if CONFIG.get('CANNON_AIMBOT_ENABLED'):    
+        if CONFIG.get('CANNON_AIMBOT_ENABLED'):  
 
             #set constants
             cannonballSpeed = 68
@@ -216,25 +217,31 @@ class Ship(DisplayObject):
 
             distanceFromCenter = -(self.icon.x - (screenSizeX / 2))
                     
-            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < 200:
+            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 0 < self.distance < 471 and abs(distanceFromCenter) < 400:
 
                 #find speed of player
 
                 #do math
-                requiredAngle = math.degrees(0.5 * (math.asin((gravity * (self.distance - 5)) / (cannonballSpeed ** 2))))
-                cameraAngle = self.my_coords["cam_x"]
-                sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
-                flightTime = 2 * cannonballSpeed * math.sin(math.radians(requiredAngle)) / gravity
-                self.player_speed_x = 10
+                requiredAngleStationary = 0.5 * (math.asin((gravity * (self.distance - 5)) / (cannonballSpeed ** 2)))
+                flightTime = 2 * cannonballSpeed * math.sin(requiredAngleStationary) / gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
                 relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
-                relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
-                if relativeSpeed != 0:
-                    newDistance_x
-
-                
-                print(str(leadAngle) + ' leadAngle | ' + str(relativeSpeed))
-
+                #relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
+                futureCoords = self.coords.copy()
+                futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
+                futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
+                futureDistance = calculate_distance(futureCoords, self.my_coords)
+                try:
+                    requiredAngle = math.degrees(0.5 * (math.asin((gravity * (futureDistance - 5)) / (cannonballSpeed ** 2))))
+                except:
+                    requiredAngle = 0
+                futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
+                try:
+                    futureDistanceFromCenter = -(futureScreenCoords[0] - (screenSizeX / 2))
+                except:
+                    futureDistanceFromCenter = 0
+                cameraAngle = self.my_coords["cam_x"]
+                sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
 
                 '''TODO
                 - find relative horizontal speed of target
@@ -248,13 +255,13 @@ class Ship(DisplayObject):
                 - IMPORTANT: find horizontal offset that results in the same horizontal speed as target
                 - IMPORTANT: if relativeSpeed_x > relativeSpeed_y, ship is traveling along the x axis and horizontal speed is equal to the speed along the x axis
                 '''
-                #print(str(distanceFromCenter) + ' pixels from center | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(sleepTime) + ' sleep time')
+                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(self.speed) + ' speed')
 
-                if 200 > distanceFromCenter > 10:
+                if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
                     time.sleep(0.005)
                     self.keyboard.release('a')
-                elif -200 < distanceFromCenter < -10:
+                elif futureDistanceFromCenter < -10:
                     self.keyboard.press('d')
                     time.sleep(0.005)
                     self.keyboard.release('d')

@@ -43,3 +43,5 @@ ships = {
     #     "Name": "Flameheart Galleon",
     # },  # To implement, must modify ship.py's update method for visibility
 }
+
+ship_keys = set(ships.keys())
