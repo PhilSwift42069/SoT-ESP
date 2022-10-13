@@ -222,7 +222,7 @@ class Ship(DisplayObject):
                 flightTime = 2 * cannonballSpeed * math.sin(requiredAngleStationary) / gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
                 relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
-                #relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
+                relativeSpeed = math.sqrt((relativeSpeed_x ** 2) + (relativeSpeed_y ** 2))
                 futureCoords = self.coords.copy()
                 futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
                 futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
@@ -238,8 +238,8 @@ class Ship(DisplayObject):
                     futureDistanceFromCenter = 0
                 cameraAngle = self.my_coords["cam_x"]
                 sleepTime = sleepConstant * abs(cameraAngle - requiredAngle)
-                
-                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(self.speed) + ' speed')
+
+                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(requiredAngle) + ' required angle | ' + str(cameraAngle) + ' current angle | ' + str(relativeSpeed) + ' relative speed')
 
                 if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
