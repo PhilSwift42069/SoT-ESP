@@ -10,6 +10,7 @@ import win32gui
 import base64
 from pyglet.graphics import Batch
 from pyglet.text import Label
+import vgamepad as vg
 
 # True=Enabled & False=Disabled for each of the config items
 CONFIG = {
@@ -200,3 +201,6 @@ def calculate_distance_precise(obj_to: dict, obj_from: dict):
 b_label = Label(base64.b64decode('RG91Z1RoZURydWlkJ3MgRVNQIEZyYW1ld29yaw==').decode("utf-8"),
                 x=SOT_WINDOW_W - 537, y=10, font_size=24, bold=True,
                 color=(127, 127, 127, 65), batch=main_batch)
+
+if CONFIG.get("CANNON_AIMBOT_ENABLED"):
+    gamepad = vg.VX360Gamepad()

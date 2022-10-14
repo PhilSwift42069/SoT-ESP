@@ -7,7 +7,7 @@ from turtle import distance
 from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
-from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_distance_precise, main_batch, \
+from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_distance_precise, main_batch, gamepad, \
      TEXT_OFFSET_X, TEXT_OFFSET_Y, CONFIG
 from mapping import ships
 from Modules.display_object import DisplayObject
@@ -87,6 +87,7 @@ class Ship(DisplayObject):
         self.screenSizeX = SOT_WINDOW[2] - SOT_WINDOW[0]
 
         self.keyboard = Controller()
+        self.gamepad = gamepad
 
         # All of our actual display information & rendering
         self.color = SHIP_COLOR
@@ -240,9 +241,9 @@ class Ship(DisplayObject):
                 cameraAngle = self.my_coords["cam_x"]
                 sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
 
-                print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
+                #print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
 
-                if futureDistanceFromCenter > 10:
+                '''if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
                     time.sleep(0.005)
                     self.keyboard.release('a')
@@ -257,4 +258,20 @@ class Ship(DisplayObject):
                 elif cameraAngle > requiredAngle + 0.01:
                     self.keyboard.press('s')
                     time.sleep(sleepTime)
-                    self.keyboard.release('s')
+                    self.keyboard.release('s')'''
+
+                #self.gamepad.right_joystick_float(-futureDistanceFromCenter/(self.screenSizeX*0.15),0)
+                if 0 < futureDistanceFromCenter < 50:
+                    self.gamepad.right_joystick_float(-0.5,0)
+                elif futureDistanceFromCenter > 100:
+                    self.gamepad.right_joystick_float(-1,0)
+                elif 0 > futureDistanceFromCenter > -50:
+                    self.gamepad.right_joystick_float(0.5,0)
+                elif futureDistanceFromCenter < -100:
+                    self.gamepad.right_joystick_float(1,0)
+                self.gamepad.update()
+                print(futureDistanceFromCenter)
+            elif time.time() - self.old_time > 0.4:
+                self.gamepad.right_joystick(0,0)
+                self.gamepad.update()
+                print('stopped')
