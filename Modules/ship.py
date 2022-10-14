@@ -12,10 +12,8 @@ from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_dis
 from mapping import ships
 from Modules.display_object import DisplayObject
 import time
-import win32api
-import win32gui
+import win32api, win32gui, win32con
 from pynput.keyboard import Controller
-from pynput.mouse import Controller
 import math
 
 SHIP_COLOR = (100, 0, 0)  # The color we want the indicator circle to be
@@ -89,7 +87,6 @@ class Ship(DisplayObject):
         self.screenSizeX = SOT_WINDOW[2] - SOT_WINDOW[0]
 
         self.keyboard = Controller()
-        self.mouse = Controller()
 
         # All of our actual display information & rendering
         self.color = SHIP_COLOR
@@ -245,7 +242,7 @@ class Ship(DisplayObject):
 
                 print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
 
-                '''if futureDistanceFromCenter > 10:
+                if futureDistanceFromCenter > 10:
                     self.keyboard.press('a')
                     time.sleep(0.005)
                     self.keyboard.release('a')
@@ -260,7 +257,4 @@ class Ship(DisplayObject):
                 elif cameraAngle > requiredAngle + 0.01:
                     self.keyboard.press('s')
                     time.sleep(sleepTime)
-                    self.keyboard.release('s')'''
-
-                if time.time() - self.old_time > 0.4:
-                    self.mouse.move(0,20)
+                    self.keyboard.release('s')
