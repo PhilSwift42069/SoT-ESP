@@ -241,26 +241,7 @@ class Ship(DisplayObject):
                 cameraAngle = self.my_coords["cam_x"]
                 sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
 
-                #print(str(futureDistanceFromCenter) + ' pixels from target | ' + str(cameraAngle - requiredAngle) + ' degrees from target | ' + str(relativeSpeed) + ' relative speed')
-
-                '''if futureDistanceFromCenter > 10:
-                    self.keyboard.press('a')
-                    time.sleep(0.005)
-                    self.keyboard.release('a')
-                elif futureDistanceFromCenter < -10:
-                    self.keyboard.press('d')
-                    time.sleep(0.005)
-                    self.keyboard.release('d')
-                if cameraAngle < requiredAngle - 0.01:
-                    self.keyboard.press('w')
-                    time.sleep(sleepTime)
-                    self.keyboard.release('w')
-                elif cameraAngle > requiredAngle + 0.01:
-                    self.keyboard.press('s')
-                    time.sleep(sleepTime)
-                    self.keyboard.release('s')'''
-
-                #self.gamepad.right_joystick_float(-futureDistanceFromCenter/(self.screenSizeX*0.15),0)
+                #determine controller inputs
                 if 10 < futureDistanceFromCenter <= 100:
                     gamepadX = -0.5
                 elif futureDistanceFromCenter > 100:
@@ -281,9 +262,10 @@ class Ship(DisplayObject):
                     gamepadY = -0.2
                 else:
                     gamepadY = ((requiredAngle - cameraAngle) ** 1/3)
-                print(str(gamepadX) + ', ' + str(gamepadY) + ' | ' + str(futureDistanceFromCenter) + ', ' + str(requiredAngle - cameraAngle))
                 self.gamepad.right_joystick_float(gamepadX, gamepadY)
                 self.gamepad.update()
+
+            #if aimbot is not active, stop all controller inputs
             elif time.time() - self.old_time > 0.4:
                 self.gamepad.right_joystick(0,0)
                 self.gamepad.update()
