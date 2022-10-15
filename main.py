@@ -7,7 +7,7 @@ import base64
 import pyglet
 from pyglet.text import Label
 from pyglet.gl import Config
-from helpers import SOT_WINDOW, SOT_WINDOW_H, SOT_WINDOW_W, main_batch, \
+from helpers import CONFIG, SOT_WINDOW, SOT_WINDOW_H, SOT_WINDOW_W, main_batch, \
     version, logger
 from sot_hack import SoTMemoryReader
 
@@ -92,8 +92,9 @@ if __name__ == '__main__':
         window.clear()
 
         # Update our player count Label & crew list
-        player_count.text = f"Player Count: {smr.crew_data.total_players}"
-        crew_list.text = smr.crew_data.crew_str
+        if CONFIG.get('CREWS_ENABLED'):
+            player_count.text = f"Player Count: {smr.crew_data.total_players}"
+            crew_list.text = smr.crew_data.crew_str
 
         # Draw our main batch & FPS counter at the bottom left
         main_batch.draw()
@@ -114,18 +115,16 @@ if __name__ == '__main__':
     # Note: May not translate to actual FPS, but rather FPS of the program
     fps_display = pyglet.window.FPSDisplay(window)
 
-    # Our base player_count label in the top-right of our screen. Updated
-    # in on_draw()
-    player_count = Label("Player Count: {}",
-                         x=SOT_WINDOW_W * 0.85,
-                         y=SOT_WINDOW_H * 0.9, batch=main_batch)
-
     # The label for showing all players on the server under the count
     # This purely INITIALIZES it does not inherently update automatically
-    if True:  # pylint: disable=using-constant-test
+    if CONFIG.get('CREWS_ENABLED'):  # pylint: disable=using-constant-test
         crew_list = Label(f"{smr.crew_data.crew_str}", x=SOT_WINDOW_W * 0.85,
-                          y=(SOT_WINDOW_H-25) * 0.9, batch=main_batch, width=300,
-                          multiline=True)
+                          y=(SOT_WINDOW_H-25) * 0.9, batch=main_batch, width=300, multiline=True)
+        # Our base player_count label in the top-right of our screen. Updated
+        # in on_draw()
+        player_count = Label("Player Count: {}",
+                         x=SOT_WINDOW_W * 0.85,
+                         y=SOT_WINDOW_H * 0.9, batch=main_batch)
         # Note: The width of 300 is the max pixel width of a single line
         # before auto-wrapping the text to the next line. Updated in on_draw()
 

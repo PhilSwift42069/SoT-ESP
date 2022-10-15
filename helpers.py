@@ -14,7 +14,7 @@ import vgamepad as vg
 
 # True=Enabled & False=Disabled for each of the config items
 CONFIG = {
-    "CREWS_ENABLED": True,
+    "CREWS_ENABLED": False,
     "SHIPS_ENABLED": True,
     "TEST": False,
     "SPEEDOMETER_ENABLED" : False,
