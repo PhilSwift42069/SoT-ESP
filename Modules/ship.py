@@ -261,17 +261,29 @@ class Ship(DisplayObject):
                     self.keyboard.release('s')'''
 
                 #self.gamepad.right_joystick_float(-futureDistanceFromCenter/(self.screenSizeX*0.15),0)
-                if 0 < futureDistanceFromCenter < 50:
-                    self.gamepad.right_joystick_float(-0.5,0)
+                if 10 < futureDistanceFromCenter <= 100:
+                    gamepadX = -0.5
                 elif futureDistanceFromCenter > 100:
-                    self.gamepad.right_joystick_float(-1,0)
-                elif 0 > futureDistanceFromCenter > -50:
-                    self.gamepad.right_joystick_float(0.5,0)
+                    gamepadX = -1
+                elif -10 > futureDistanceFromCenter >= -100:
+                    gamepadX = 0.5
                 elif futureDistanceFromCenter < -100:
-                    self.gamepad.right_joystick_float(1,0)
+                    gamepadX = 1
+                else:
+                    gamepadX = 0
+                if (cameraAngle - requiredAngle) >= 1:
+                    gamepadY = -1
+                elif (cameraAngle - requiredAngle) <= -1:
+                    gamepadY = 1
+                elif 0 < ((requiredAngle - cameraAngle) ** 1/3) <= 0.2 and abs(requiredAngle - cameraAngle) < 0.03:
+                    gamepadY = 0.2
+                elif 0 > ((requiredAngle - cameraAngle) ** 1/3) >= -0.2 and abs(requiredAngle - cameraAngle) < 0.03:
+                    gamepadY = -0.2
+                else:
+                    gamepadY = ((requiredAngle - cameraAngle) ** 1/3)
+                print(str(gamepadX) + ', ' + str(gamepadY) + ' | ' + str(futureDistanceFromCenter) + ', ' + str(requiredAngle - cameraAngle))
+                self.gamepad.right_joystick_float(gamepadX, gamepadY)
                 self.gamepad.update()
-                print(futureDistanceFromCenter)
             elif time.time() - self.old_time > 0.4:
                 self.gamepad.right_joystick(0,0)
                 self.gamepad.update()
-                print('stopped')
