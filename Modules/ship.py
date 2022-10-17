@@ -219,7 +219,7 @@ class Ship(DisplayObject):
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):  
             distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
                     
-            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.15 * self.screenSizeX):
+            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.35 * self.screenSizeX):
                 requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
                 flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
