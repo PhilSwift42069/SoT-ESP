@@ -239,7 +239,7 @@ class Ship(DisplayObject):
                 except:
                     futureDistanceFromCenter = 0
                 cameraAngle = self.my_coords["cam_x"]
-                sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
+                #sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
 
                 #determine controller inputs
                 if 10 < futureDistanceFromCenter <= 100:

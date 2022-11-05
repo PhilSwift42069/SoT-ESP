@@ -8,7 +8,7 @@ import struct
 import logging
 from memory_helper import ReadMemory
 from mapping import ship_keys
-from helpers import OFFSETS, CONFIG, calculate_distance, calculate_distance_precise, logger
+from helpers import OFFSETS, CONFIG, calculate_distance_precise, logger
 from Modules.ship import Ship
 from Modules.crews import Crews
 from Modules.test import Test
