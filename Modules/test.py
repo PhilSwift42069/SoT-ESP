@@ -1,5 +1,6 @@
 """
-@Author PhilSwift42069
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 
 from pyglet.text import Label

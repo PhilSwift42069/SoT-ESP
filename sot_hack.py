@@ -1,7 +1,6 @@
 """
-@Author https://github.com/DougTheDruid
-@Source https://github.com/DougTheDruid/SoT-ESP-Framework
-For community support, please contact me on Discord: DougTheDruid#2784
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 
 import struct

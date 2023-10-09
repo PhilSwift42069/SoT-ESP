@@ -1,7 +1,6 @@
 """
-@Author https://github.com/DougTheDruid
-@Source htfstps://github.com/DougTheDruid/SoT-ESP-Framework
-For community support, please contact me on Discord: DougTheDruid#2784
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 import base64
 import pyglet
@@ -76,7 +75,8 @@ if __name__ == '__main__':
     # Create an overlay window with Pyglet at the same size as our SoT Window
     window = pyglet.window.Window(SOT_WINDOW_W, SOT_WINDOW_H,
                                   vsync=False, style='overlay', config=config,
-                                  caption="DougTheDruid's ESP Framework")
+                                 )
+                                  #caption="DougTheDruid's ESP Framework")
     hwnd = window._hwnd  # pylint: disable=protected-access
 
     # Move our window to the same location that our SoT Window is at

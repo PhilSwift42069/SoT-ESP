@@ -1,6 +1,6 @@
 """
-@Author https://github.com/DougTheDruid
-@Source https://github.com/DougTheDruid/SoT-ESP-Framework
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 
 import math
@@ -17,7 +17,7 @@ CONFIG = {
     "CREWS_ENABLED": True,
     "SHIPS_ENABLED": True,
     "TEST": False,
-    "SPEEDOMETER_ENABLED" : False,
+    "SPEEDOMETER_ENABLED" : True,
     "CANNON_AIMBOT_ENABLED": True,
 }
 

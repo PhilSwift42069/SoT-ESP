@@ -1,6 +1,6 @@
 """
-@Author https://github.com/DougTheDruid
-@Source https://github.com/DougTheDruid/SoT-ESP-Framework
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 
 from helpers import *

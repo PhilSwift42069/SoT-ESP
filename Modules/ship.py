@@ -1,6 +1,6 @@
 """
-@Author https://github.com/DougTheDruid
-@Source https://github.com/DougTheDruid/SoT-ESP-Framework
+@Author https://github.com/PhilSwift42069
+@Source https://github.com/PhilSwift42069/SoT-ESP
 """
 
 from turtle import distance
@@ -216,10 +216,12 @@ class Ship(DisplayObject):
             self.group.visible = False
 
         #cannon aimbot
-        if CONFIG.get('CANNON_AIMBOT_ENABLED'):  
+        if CONFIG.get('CANNON_AIMBOT_ENABLED'):
+            print("AIMBOT ENABLED")  
             distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
                     
             if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.35 * self.screenSizeX):
+                print("AIMBOT ACTIVE")
                 requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
                 flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
