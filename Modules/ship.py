@@ -219,9 +219,11 @@ class Ship(DisplayObject):
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):
             print("AIMBOT ENABLED")  
             distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
-                    
+            
+            #run aimbot when holding shift (0x10) + right mouse button (0x02)
             if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.35 * self.screenSizeX):
                 print("AIMBOT ACTIVE")
+                #calculate for aimbot
                 requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
                 flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
@@ -231,6 +233,7 @@ class Ship(DisplayObject):
                 futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
                 futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
                 futureDistance = calculate_distance(futureCoords, self.my_coords)
+
                 try:
                     requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
                 except:
