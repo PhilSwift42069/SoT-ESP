@@ -222,8 +222,6 @@ class Ship(DisplayObject):
             
             #run aimbot when holding shift (0x10) + right mouse button (0x02)
             if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.35 * self.screenSizeX):
-                print("AIMBOT ACTIVE")
-                #calculate for aimbot
                 requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
                 flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
