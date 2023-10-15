@@ -107,14 +107,13 @@ class SoTMemoryReader:
             OFFSETS.get('PlayerCameraManager.CameraCache')
             + OFFSETS.get('CameraCacheEntry.MinimalViewInfo'),
             fov=True)
-        if CONFIG.get('DEBUG'):
+        if CONFIG.get('SPEEDOMETER_ENABLED'): #Prints my own speed
             self.currentTime = time.time()
-            if self.currentTime - self.oldTime > 0.5:
-                if CONFIG.get('SPEEDOMETER_ENABLED'): #Prints my own speed
-                    self.distanceTraveled = calculate_distance_precise(self.my_coords, self.oldCoords)
-                    self.oldCoords = self.my_coords
-                    print(str(self.distanceTraveled/(self.currentTime - self.oldTime)) +" m/s")
-                    self.oldTime=time.time()
+            if self.currentTime - self.oldTime > 0.5: 
+                self.distanceTraveled = calculate_distance_precise(self.my_coords, self.oldCoords)
+                self.oldCoords = self.my_coords
+                print(str(self.distanceTraveled/(self.currentTime - self.oldTime)) +" m/s")
+                self.oldTime=time.time()
 
     def _coord_builder(self, actor_address: int, offset=0x78, camera=True,
                        fov=False) -> dict:

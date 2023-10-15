@@ -55,7 +55,7 @@ def load_graphics(_):
 
 
 if __name__ == '__main__':
-    logger.info(base64.b64decode("RG91Z1RoZURydWlkJ3MgRVNQIEZyYW1ld29yayBTdGFydGluZw==").decode("utf-8"))
+    logger.info(f"Philiam's ESP & Aimbot Starting")
     logger.info(f"Hack Version: {version}")
 
     # Initialize our SoT Hack object, and do a first run of reading actors

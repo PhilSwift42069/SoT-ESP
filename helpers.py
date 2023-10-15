@@ -19,7 +19,7 @@ CONFIG = {
     "TEST": False,
     "SPEEDOMETER_ENABLED" : True,
     "CANNON_AIMBOT_ENABLED": True,
-    "DEBUG": True,
+    "DEBUG": False,
 }
 
 # Used to track unique crews
@@ -199,7 +199,7 @@ def calculate_distance_precise(obj_to: dict, obj_from: dict):
                          (obj_to.get("z") - obj_from.get("z")) ** 2))
 
 
-b_label = Label(base64.b64decode('RG91Z1RoZURydWlkJ3MgRVNQIEZyYW1ld29yaw==').decode("utf-8"),
+b_label = Label("Philiam's Epic ESP & Aimbot",
                 x=SOT_WINDOW_W - 537, y=10, font_size=24, bold=True,
                 color=(127, 127, 127, 65), batch=main_batch)
 
