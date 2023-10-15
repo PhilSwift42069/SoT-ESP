@@ -1,4 +1,4 @@
-# Doug's Python SoT ESP Framework
+# Python SoT ESP Framework
 Hello all! This is a framework to develop an SoT ESP Hack, all utilizing Python. This is a trimmed down version 
 of a personal creation I utilize actively. This project is a great foundation for someone who is looking to get started in 
 ESP hacks for SoT, other UE4 games, or games in general! The code is loaded with comments to help you grasp the "how" and "why" of basic 

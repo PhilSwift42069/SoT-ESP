@@ -99,6 +99,9 @@ class Ship(DisplayObject):
         # Used to track if the display object needs to be removed
         self.to_delete = False
 
+        if CONFIG.get('debug'):
+            self.old_time = time.time()
+
     def _build_circle_render(self) -> Circle:
         """
         Creates a circle located at the screen coordinates (if they exist).
@@ -217,7 +220,6 @@ class Ship(DisplayObject):
 
         #cannon aimbot
         if CONFIG.get('CANNON_AIMBOT_ENABLED'):
-            print("AIMBOT ENABLED")  
             distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
             
             #run aimbot when holding shift (0x10) + right mouse button (0x02)
@@ -226,16 +228,24 @@ class Ship(DisplayObject):
                 flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
                 relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
                 relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
-                distanceZ = my_coords['z'] - self.coords['z']
+                #distanceZ = my_coords['z'] - self.coords['z']
                 futureCoords = self.coords.copy()
-                futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
-                futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
+                #futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
+                #futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
+                for x in range(10):
+                    futureCoords['x'] = self.coords['x'] + relativeSpeed_x * flightTime
+                    futureCoords['y'] = self.coords['y'] + relativeSpeed_y * flightTime
+                    futureDistance = calculate_distance(futureCoords, self.my_coords)
+                    try:
+                        requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
+                    except:
+                        requiredAngle = 0
+                    flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
+                if self.distance > 280:
+                    futureCoords['y'] = self.coords['y']
                 futureDistance = calculate_distance(futureCoords, self.my_coords)
 
-                try:
-                    requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
-                except:
-                    requiredAngle = 0
+                
                 futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
                 try:
                     futureDistanceFromCenter = -(futureScreenCoords[0] - (self.screenSizeX / 2))
@@ -243,6 +253,10 @@ class Ship(DisplayObject):
                     futureDistanceFromCenter = 0
                 cameraAngle = self.my_coords["cam_x"]
                 #sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
+
+                if CONFIG.get('DEBUG'):
+                    print(str(futureDistanceFromCenter) + " pixels")
+                    print(str(requiredAngle) + " degrees")
 
                 #determine controller inputs
                 if 10 < futureDistanceFromCenter <= 100:

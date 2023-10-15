@@ -19,12 +19,13 @@ CONFIG = {
     "TEST": False,
     "SPEEDOMETER_ENABLED" : True,
     "CANNON_AIMBOT_ENABLED": True,
+    "DEBUG": True,
 }
 
 # Used to track unique crews
 crew_tracker = {}
 
-version = "1.3.0"
+version = "1.4.0"
 
 # Config specification for logging file
 logging.basicConfig(filename='DougsESP.log', level=logging.DEBUG,
