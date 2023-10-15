@@ -8,7 +8,7 @@ from pyglet.text import Label
 from pyglet.shapes import Circle
 from pyglet.graphics import Group
 from helpers import OFFSETS, calculate_distance, object_to_screen, calculate_distance_precise, main_batch, gamepad, \
-     TEXT_OFFSET_X, TEXT_OFFSET_Y, CONFIG
+     TEXT_OFFSET_X, TEXT_OFFSET_Y, CONFIG, logger
 from mapping import ships
 from Modules.display_object import DisplayObject
 import time
@@ -240,6 +240,7 @@ class Ship(DisplayObject):
                         requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
                     except:
                         requiredAngle = 0
+                        logger.error("AIMBOT: REQUIRED ANGLE OUT OF RANGE")
                         print("REQUIRED ANGLE OUT OF RANGE")
                     flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
                 if self.distance > 280:
