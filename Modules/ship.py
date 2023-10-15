@@ -240,6 +240,7 @@ class Ship(DisplayObject):
                         requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
                     except:
                         requiredAngle = 0
+                        print("REQUIRED ANGLE OUT OF RANGE")
                     flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
                 if self.distance > 280:
                     futureCoords['y'] = self.coords['y']
