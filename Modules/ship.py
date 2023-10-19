@@ -218,78 +218,79 @@ class Ship(DisplayObject):
             # if it isn't on our screen, set it to invisible to save resources
             self.group.visible = False
 
-        #cannon aimbot
-        if CONFIG.get('CANNON_AIMBOT_ENABLED'):
-            distanceFromCenter = -(self.icon.x - (self.screenSizeX / 2))
+
+
+###############################################################
+####################     CANNON AIMBOT     ####################
+###############################################################
+
+
+
+        #run aimbot when holding shift (0x10) + right mouse button (0x02)
+        if CONFIG.get('CANNON_AIMBOT_ENABLED' and win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 470 and abs(-(self.icon.x - (self.screenSizeX / 2))) < (0.35 * self.screenSizeX)):
+            try:
+                requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
+            except:
+                requiredAngleStationary = 45
+                logger.error(f"AIMBOT: REQUIRED STATIONARY ANGLE OUT OF RANGE")
+                print("REQUIRED STATIONARY ANGLE OUT OF RANGE")
+            flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
+            relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
+            relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
+            #distanceZ = my_coords['z'] - self.coords['z']
+            futureCoords = self.coords.copy()
             
-            #run aimbot when holding shift (0x10) + right mouse button (0x02)
-            if win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 471 and abs(distanceFromCenter) < (0.35 * self.screenSizeX):
-                try:
-                    requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
-                except:
-                    requiredAngleStationary = 0
-                    logger.error(f"AIMBOT: REQUIRED STATIONARY ANGLE OUT OF RANGE")
-                    print("REQUIRED STATIONARY ANGLE OUT OF RANGE")
-                flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
-                relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
-                relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
-                #distanceZ = my_coords['z'] - self.coords['z']
-                futureCoords = self.coords.copy()
-                #futureCoords['y'] = futureCoords['y'] + relativeSpeed_y * flightTime
-                #futureCoords['x'] = futureCoords['x'] + relativeSpeed_x * flightTime
-                for x in range(1):
-                    futureCoords['x'] = self.coords['x'] + relativeSpeed_x * flightTime
-                    futureCoords['y'] = self.coords['y'] + relativeSpeed_y * flightTime
-                    futureDistance = calculate_distance(futureCoords, self.my_coords)
-                    try:
-                        requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
-                    except:
-                        requiredAngle = 0
-                        logger.error(f"AIMBOT: REQUIRED FUTURE ANGLE OUT OF RANGE")
-                        print("REQUIRED FUTURE ANGLE OUT OF RANGE")
-                    flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
-                if self.distance > 280:
-                    futureCoords['y'] = self.coords['y']
+            #Iterate to find future coords
+            for x in range(10):
+                futureCoords['x'] = self.coords['x'] + relativeSpeed_x * flightTime
+                futureCoords['y'] = self.coords['y'] + relativeSpeed_y * flightTime
                 futureDistance = calculate_distance(futureCoords, self.my_coords)
-
-                
-                futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
                 try:
-                    futureDistanceFromCenter = -(futureScreenCoords[0] - (self.screenSizeX / 2))
+                    requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
                 except:
-                    futureDistanceFromCenter = 0
-                cameraAngle = self.my_coords["cam_x"]
-                #sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
+                    requiredAngle = 45
+                    logger.error(f"AIMBOT: REQUIRED FUTURE ANGLE OUT OF RANGE")
+                    print("REQUIRED FUTURE ANGLE OUT OF RANGE")
+                flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
 
-                if CONFIG.get('DEBUG'):
-                    print(str(futureDistanceFromCenter) + " pixels")
-                    print(str(requiredAngle) + " degrees")
+            
+            futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
+            try:
+                futureDistanceFromCenter = -(futureScreenCoords[0] - (self.screenSizeX / 2))
+            except:
+                futureDistanceFromCenter = 0
+            cameraAngle = self.my_coords["cam_x"]
+            #sleepTime = 0.001 * abs(cameraAngle - requiredAngle)
 
-                #determine controller inputs
-                if 10 < futureDistanceFromCenter <= 100:
-                    gamepadX = -0.5
-                elif futureDistanceFromCenter > 100:
-                    gamepadX = -1
-                elif -10 > futureDistanceFromCenter >= -100:
-                    gamepadX = 0.5
-                elif futureDistanceFromCenter < -100:
-                    gamepadX = 1
-                else:
-                    gamepadX = 0
-                if (cameraAngle - requiredAngle) >= 1:
-                    gamepadY = -1
-                elif (cameraAngle - requiredAngle) <= -1:
-                    gamepadY = 1
-                elif 0 < ((requiredAngle - cameraAngle) ** 1/3) <= 0.2 and abs(requiredAngle - cameraAngle) < 0.03:
-                    gamepadY = 0.2
-                elif 0 > ((requiredAngle - cameraAngle) ** 1/3) >= -0.2 and abs(requiredAngle - cameraAngle) < 0.03:
-                    gamepadY = -0.2
-                else:
-                    gamepadY = ((requiredAngle - cameraAngle) ** 1/3)
-                self.gamepad.right_joystick_float(gamepadX, gamepadY)
-                self.gamepad.update()
+            if CONFIG.get('DEBUG'):
+                print(str(futureDistanceFromCenter) + " pixels")
+                print(str(requiredAngle) + " degrees")
 
-            #if aimbot is not active, stop all controller inputs
-            elif time.time() - self.old_time > 0.4:
-                self.gamepad.right_joystick(0,0)
-                self.gamepad.update()
+            #determine controller inputs
+            if 10 < futureDistanceFromCenter <= 100:
+                gamepadX = -0.5
+            elif futureDistanceFromCenter > 100:
+                gamepadX = -1
+            elif -10 > futureDistanceFromCenter >= -100:
+                gamepadX = 0.5
+            elif futureDistanceFromCenter < -100:
+                gamepadX = 1
+            else:
+                gamepadX = 0
+            if (cameraAngle - requiredAngle) >= 1:
+                gamepadY = -1
+            elif (cameraAngle - requiredAngle) <= -1:
+                gamepadY = 1
+            elif 0 < ((requiredAngle - cameraAngle) ** 1/3) <= 0.2 and abs(requiredAngle - cameraAngle) < 0.03:
+                gamepadY = 0.2
+            elif 0 > ((requiredAngle - cameraAngle) ** 1/3) >= -0.2 and abs(requiredAngle - cameraAngle) < 0.03:
+                gamepadY = -0.2
+            else:
+                gamepadY = ((requiredAngle - cameraAngle) ** 1/3)
+            self.gamepad.right_joystick_float(gamepadX, gamepadY)
+            self.gamepad.update()
+
+        #if aimbot is not active, stop all controller inputs
+        elif time.time() - self.old_time > 0.4:
+            self.gamepad.right_joystick(0,0)
+            self.gamepad.update()
