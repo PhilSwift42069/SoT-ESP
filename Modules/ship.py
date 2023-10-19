@@ -78,8 +78,8 @@ class Ship(DisplayObject):
         self.old_player_speed_y = 0
         self.old_distance = self.distance
 
-        self.cannonballSpeed = 68
-        self.gravity = 9.8
+        self.CANNONBALL_SPEED = 68
+        self.GRAVITY = 9.8
 
         window = win32gui.FindWindow(None, "Sea of Thieves")
         SOT_WINDOW = win32gui.GetWindowRect(window)  # (x1, y1, x2, y2)
@@ -229,12 +229,12 @@ class Ship(DisplayObject):
         #run aimbot when holding shift (0x10) + right mouse button (0x02)
         if CONFIG.get('CANNON_AIMBOT_ENABLED' and win32api.GetKeyState(0x02) < 0 and win32api.GetKeyState(0x10) < 0 and 20 < self.distance < 470 and abs(-(self.icon.x - (self.screenSizeX / 2))) < (0.35 * self.screenSizeX)):
             try:
-                requiredAngleStationary = 0.5 * (math.asin((self.gravity * (self.distance - 5)) / (self.cannonballSpeed ** 2)))
+                requiredAngleStationary = 0.5 * (math.asin((self.GRAVITY * (self.distance - 5)) / (self.CANNONBALL_SPEED ** 2)))
             except:
                 requiredAngleStationary = 45
                 logger.error(f"AIMBOT: REQUIRED STATIONARY ANGLE OUT OF RANGE")
                 print("REQUIRED STATIONARY ANGLE OUT OF RANGE")
-            flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngleStationary) / self.gravity
+            flightTime = 2 * self.CANNONBALL_SPEED * math.sin(requiredAngleStationary) / self.GRAVITY
             relativeSpeed_x = self.speed_x - self.player_speed_x #speed of target - speed of player
             relativeSpeed_y = self.speed_y - self.player_speed_y #speed of target - speed of player
             #distanceZ = my_coords['z'] - self.coords['z']
@@ -246,12 +246,12 @@ class Ship(DisplayObject):
                 futureCoords['y'] = self.coords['y'] + relativeSpeed_y * flightTime
                 futureDistance = calculate_distance(futureCoords, self.my_coords)
                 try:
-                    requiredAngle = math.degrees(0.5 * (math.asin((self.gravity * (futureDistance - 5)) / (self.cannonballSpeed ** 2))))
+                    requiredAngle = math.degrees(0.5 * (math.asin((self.GRAVITY * (futureDistance - 5)) / (self.CANNONBALL_SPEED ** 2))))
                 except:
                     requiredAngle = 45
                     logger.error(f"AIMBOT: REQUIRED FUTURE ANGLE OUT OF RANGE")
                     print("REQUIRED FUTURE ANGLE OUT OF RANGE")
-                flightTime = 2 * self.cannonballSpeed * math.sin(requiredAngle) / self.gravity
+                flightTime = 2 * self.CANNONBALL_SPEED * math.sin(requiredAngle) / self.GRAVITY
 
             
             futureScreenCoords = object_to_screen(self.my_coords, futureCoords)
