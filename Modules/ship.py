@@ -240,6 +240,19 @@ class Ship(DisplayObject):
             #distanceZ = my_coords['z'] - self.coords['z']
             futureCoords = self.coords.copy()
             
+            #SP's Kinematics Formula
+            a = 0
+            s = 20
+            v = 2
+
+            #theta = up/down, phi = left/right
+            purple = ((s) / (v * math.sqrt(1 + x ** 2))) * math.sqrt(1 - (((self.GRAVITY ** 2) * ((4 - 3 * x) ** 2)) / (4 * (s ** 2) * (v ** 2) * ((x * math.cos(a) - math.sin(a)) ** 2))))
+            green = (3 * (x * math.cos(a) - math.sin(a))) / (4 - 3 * x)
+            requiredAngle = math.asin(((self.GRAVITY / (2 * s * v)) * (4 - 3 * (1.1317))) / (1.1317 * math.cos(a) - math.sin(a))) #Why is only cos(a) being multiplied by 1.1317??? #Angle to shoot above horizon
+            SPTime = (2 * s * math.sin(requiredAngle)) / self.GRAVITY #time
+            futureDistance = math.sqrt(((3 + v * SPTime * math.cos(a)) ** 2) + ((4 + v * SPTime * math.sin(a)) ** 2))
+            projectileFlightDistance = 
+
             #Iterate to find future coords
             for x in range(10):
                 futureCoords['x'] = self.coords['x'] + relativeSpeed_x * flightTime
